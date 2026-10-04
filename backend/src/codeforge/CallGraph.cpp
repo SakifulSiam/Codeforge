@@ -1,5 +1,4 @@
 #include "codeforge/CallGraph.hpp"
-
 #include <algorithm>
 #include "codeforge/dsa/Queue.hpp"
 

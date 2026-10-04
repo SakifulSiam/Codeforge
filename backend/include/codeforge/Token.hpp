@@ -9,12 +9,12 @@ namespace codeforge
     enum class TokenType
     {
         Keyword,
-        Identifier,
-        Number,
-        StringLiteral,
-        CharacterLiteral,
-        Operator,
-        Punctuation,
+        Identifier,//x
+        Number,//3
+        StringLiteral,//"hello"
+        CharacterLiteral,//'a'
+        Operator,//+
+        Punctuation,//;
         EndOfFile
     };
 

@@ -12,6 +12,15 @@ add_library(codeforge_engine
     src/codeforge/ComplexityAnalyzer.cpp
 )
 target_include_directories(codeforge_engine PUBLIC include)
-add_executable(codeforge_backend src/main.cpp)
+add_executable(codeforge_backend
+    src/main.cpp
+    src/codeforge/Process.cpp
+    src/codeforge/CodeRunner.cpp
+)
+file(TO_CMAKE_PATH "${CMAKE_CXX_COMPILER}" CODEFORGE_COMPILER_PATH)
+target_compile_definitions(codeforge_backend PRIVATE CODEFORGE_CXX_COMPILER="${CODEFORGE_COMPILER_PATH}")
+if(MSVC)
+    target_compile_definitions(codeforge_backend PRIVATE CODEFORGE_MSVC)
+endif()
 target_link_libraries(codeforge_backend PRIVATE codeforge_engine)
 target_link_libraries(codeforge_backend PRIVATE Crow::Crow)

@@ -1,8 +1,17 @@
 @BASE_URL=http://localhost:18080
 
-POST {{BASE_URL}}/analysis-complexity HTTP/1.1
+POST {{BASE_URL}}/api/analyze-complexity HTTP/1.1
 content-type: application/json
 
 {
     "source_code": "#include <algorithm>\n#include <vector>\n\nbool algorithm(const std::vector<int>& values, int target) {\n    int left = 0;\n    int right = static_cast<int>(values.size()) - 1;\n\n    while (left <= right) {\n        int middle = left + (right - left) / 2;\n        if (values[middle] == target) return true;\n        if (values[middle] < target) left = middle + 1;\n        else right = middle - 1;\n    }\n\n    return false;\n}"
+}
+
+###
+
+POST {{BASE_URL}}/api/run-code HTTP/1.1
+content-type: application/json
+
+{
+  "source_code": "#include <iostream>\nint main(){\nstd::cout << \"hi world\\n\";\nreturn 0;\n}"
 }
