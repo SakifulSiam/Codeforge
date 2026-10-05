@@ -14,7 +14,6 @@ namespace codeforge
 {
     namespace
     {
-
         enum class Growth
         {
             Constant,

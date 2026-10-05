@@ -206,21 +206,6 @@ export default function Studio() {
   return (
     <div className="app-shell">
       <div className="workspace">
-        <header className="topbar">
-          <div className="brand-name">
-            <span className="brand-code">CODE</span>
-            <span className="brand-forge">FORGE</span>
-            <span className="brand-divider" />
-            <span className="brand-context">Complexity Studio</span>
-          </div>
-          <div className="topbar-right">
-            <span className="status-dot" />
-            <span className="topbar-status">Workspace ready</span>
-            <span className="topbar-separator" />
-            <span className="avatar">CF</span>
-          </div>
-        </header>
-
         <div className="page-content">
           <div className="page-heading">
             <div>

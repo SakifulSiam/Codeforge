@@ -1,104 +1,80 @@
 # CODEFORGE frontend
 
-A small React + JavaScript app for the CODEFORGE complexity analyzer. It keeps the C++ editor, syntax highlighting, undo/redo, starter examples, analysis results, standard input, and the Run button for a future execution endpoint.
-
-## Requirements
-
-- Node.js 20.19+ (or 22.12+) and npm
-- CODEFORGE C++ backend on `http://127.0.0.1:18080` for analysis
+React + JavaScript with a C++ editor and two browser-only algorithm visualization pages. React Router handles navigation between the pages. The backend is unchanged.
 
 ## Run locally
 
-Open a terminal in this `frontend` folder:
+Requirements: Node.js 20.19+ (or 22.12+) and npm.
+
+Open a terminal inside `frontend`:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`). Start the C++ backend separately before clicking **Analyze complexity**.
-
-To build static files for deployment:
+Open the URL Vite prints, usually `http://localhost:5173`.
 
 ```sh
 npm run build
+npm run preview
 ```
 
-The generated site is in `dist/`. There is no Next.js server to run.
+The build output is in `dist/`.
 
-## Connect the APIs
+## Pages
 
-In development, Vite proxies these browser requests to the C++ backend, so local development does not require CORS changes:
+| Route | Features |
+| --- | --- |
+| `/` | Existing C++ editor, analysis, code execution, undo/redo, examples, and standard input |
+| `/sorting` | Bubble, insertion, selection, merge, and quick sort visualizations |
+| `/pathfinding` | BFS shortest path on an editable, unweighted, undirected node map |
 
-| Browser request | Backend endpoint | Status |
-| --- | --- | --- |
-| `POST /api/analyze` | `POST /analysis-complexity` | Already available |
-| `POST /api/run` | `POST /run` by default | Add this yourself |
+### Sorting
 
-The analyzer receives:
+- Select an algorithm, sample size (5–80 values), and input order: random, sorted, reversed, or few unique values.
+- Start, pause, resume, advance one step, reset, or replay the animation.
+- Adjust speed (20–800 milliseconds per step), including during playback. Lower delay is faster.
+- Watch active values, the quick-sort pivot, final positions, comparisons, and array writes. A swap counts as two writes.
+- Switching algorithms preserves the original sample for comparison. Reset reuses it; **New array** generates another sample.
+- During insertion and merge sort, temporary duplicate values can appear as values are shifted or copied back from buffers. The step description explains the held or buffered value.
 
-```json
-{ "source_code": "int algorithm(int n) { return n; }" }
-```
+### BFS map
 
-and should return:
+- Choose start and target using the dropdowns or **Set start** / **Set target**, then click a node.
+- In **Toggle edge** mode, click two nodes to add or remove the connection between them. Click the selected node again to cancel.
+- Nodes also support keyboard focus and Enter/Space activation.
+- Change map size (6–30 nodes), generate a new map, and adjust animation speed.
+- Watch the FIFO queue, discovered and explored nodes, distances from the start, and the final green path.
+- All edges cost one hop. Drawn edge lengths do not affect BFS. The result has the fewest edges; several equally short paths may exist.
+- Disconnected maps show **No route found**. Using the same node as start and target returns zero hops.
+- Changing the map or endpoints resets playback; Reset keeps the current map.
 
-```json
-{
-  "timeComplexity": "O(1)",
-  "spaceComplexity": "O(1)",
-  "detectedStructures": []
-}
-```
+Both visualization pages run entirely in the browser and need no API or backend. Algorithm time/space figures describe the algorithms; animation snapshots have additional storage costs.
 
-The analyzed function should be named `algorithm`. Other functions can be helpers. Estimates are heuristic.
+## Existing backend APIs
 
-### Enable Run later
+Start the C++ backend on `http://127.0.0.1:18080` to use Studio analysis or execution. Vite proxies `/api` requests there during development.
 
-After implementing your C++ execution endpoint, create `.env.local`:
+| Request | JSON payload |
+| --- | --- |
+| `POST /api/analyze-complexity` | `{ "source_code": "..." }` |
+| `POST /api/run-code` | `{ "source_code": "...", "input": "..." }` |
 
-```env
-BACKEND_URL=http://127.0.0.1:18080
-VITE_RUN_API_PATH=/run
-```
+The analyzer responds with `timeComplexity`, `spaceComplexity`, and `detectedStructures`. The runner responds with `output`, `exitCode`, and `timedOut`. The analyzed function should be named `algorithm`; helpers are allowed. Complexity estimates are heuristic.
 
-Restart `npm run dev` after changing environment variables. The Run button will send:
+## Production hosting
 
-```json
-{
-  "source_code": "#include <iostream>\nint main() { std::cout << 42; }",
-  "stdin": ""
-}
-```
+Serve `dist/` and configure your host to return `index.html` for frontend routes such as `/sorting` and `/pathfinding`. This allows direct links and refreshes with BrowserRouter. Keep `/api` requests routed to the backend; Vite's development proxy is not included in production builds.
 
-Your endpoint should respond with:
+## Source layout
 
-```json
-{
-  "stdout": "42",
-  "stderr": "",
-  "exitCode": 0
-}
-```
-
-Use `exitCode: null` when the program did not exit normally. Until `VITE_RUN_API_PATH` is set, clicking Run explains that the endpoint is not configured. Compile and run untrusted code only in an isolated environment with time and memory limits; this frontend does not run C++ in the browser.
-
-### Production deployment
-
-`vite build` outputs static files. Vite's development proxy does not exist in production. Either configure your web server to proxy `/api/analyze` to `/analysis-complexity` and `/api/run` to your run endpoint, or build with `VITE_API_BASE_URL` set to the public backend origin:
-
-```env
-VITE_API_BASE_URL=https://your-api.example.com
-VITE_RUN_API_PATH=/run
-```
-
-For a separate backend origin, allow the frontend's origin with CORS on the C++ backend. `VITE_` variables are embedded into the built JavaScript, so do not put secrets in them.
-
-## Files
-
-- `src/Studio.jsx`: editor, undo/redo, analysis and Run actions, result panels
-- `src/styles.css`: existing visual design
-- `vite.config.js`: local API proxy
-- `index.html` and `src/main.jsx`: React entry point
-
-Edits are stored in the browser's local storage. Upload accepts C++ source files under 200 KB. The standard input field is sent only to the Run API.
+- `src/App.jsx`: simple route definitions
+- `src/components/Header.jsx`: shared navigation
+- `src/Studio.jsx`: existing editor and API behavior
+- `src/pages/Sorting.jsx` and `src/pages/Pathfinding.jsx`: visualization pages
+- `src/algorithms/sorting.js` and `src/algorithms/bfs.js`: algorithms and animation frames
+- `src/hooks/usePlayback.js`: shared playback timer
+- `src/components/PlaybackControls.jsx`: playback and speed controls
+- `src/styles.css`: existing Studio styling
+- `src/visualizations.css`: responsive navigation and visualization styling
