@@ -7,32 +7,28 @@
 
 namespace codeforge
 {
-    namespace
+
+    const dsa::BinarySearchTreeSet<std::string> keywords = {
+        "alignas", "alignof", "auto", "bool", "break", "case", "catch",
+        "char", "class", "const", "constexpr", "continue", "default",
+        "delete", "do", "double", "else", "enum", "explicit", "extern",
+        "false", "float", "for", "friend", "if", "inline", "int", "long",
+        "namespace", "new", "noexcept", "nullptr", "operator", "private",
+        "protected", "public", "register", "return", "short", "signed",
+        "sizeof", "static", "struct", "switch", "template", "this", "throw",
+        "true", "try", "typedef", "typename", "union", "unsigned", "using",
+        "virtual", "void", "volatile", "while"};
+
+    const std::vector<std::string> multiCharacterOperators = {
+        "<<=", ">>=", "<=>", "->*", "...", "::", "++", "--", "==", "!=",
+        "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "<<", ">>",
+        "->", ".*", "&=", "|=", "^=", "##"};
+
+    bool beginsWith(const std::string &source, std::size_t position,
+                    const std::string &wanted)
     {
-
-        const dsa::BinarySearchTreeSet<std::string> keywords = {
-            "alignas", "alignof", "auto", "bool", "break", "case", "catch",
-            "char", "class", "const", "constexpr", "continue", "default",
-            "delete", "do", "double", "else", "enum", "explicit", "extern",
-            "false", "float", "for", "friend", "if", "inline", "int", "long",
-            "namespace", "new", "noexcept", "nullptr", "operator", "private",
-            "protected", "public", "register", "return", "short", "signed",
-            "sizeof", "static", "struct", "switch", "template", "this", "throw",
-            "true", "try", "typedef", "typename", "union", "unsigned", "using",
-            "virtual", "void", "volatile", "while"};
-
-        const std::vector<std::string> multiCharacterOperators = {
-            "<<=", ">>=", "<=>", "->*", "...", "::", "++", "--", "==", "!=",
-            "<=", ">=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "<<", ">>",
-            "->", ".*", "&=", "|=", "^=", "##"};
-
-        bool beginsWith(const std::string &source, std::size_t position,
-                        const std::string &wanted)
-        {
-            return source.compare(position, wanted.size(), wanted) == 0;
-        }
-
-    } // namespace
+        return source.compare(position, wanted.size(), wanted) == 0;
+    }
 
     dsa::LinkedList<Token> Tokenizer::tokenize(const std::string &sourceCode) const
     {

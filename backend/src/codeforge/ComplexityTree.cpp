@@ -4,22 +4,18 @@
 
 namespace codeforge
 {
-    namespace
+
+    std::unique_ptr<ComplexityNode> leaf(ComplexityKind kind)
     {
+        return std::make_unique<ComplexityNode>(ComplexityNode{kind, nullptr, nullptr});
+    }
 
-        std::unique_ptr<ComplexityNode> leaf(ComplexityKind kind)
-        {
-            return std::make_unique<ComplexityNode>(ComplexityNode{kind, nullptr, nullptr});
-        }
-
-        std::unique_ptr<ComplexityNode> product(std::unique_ptr<ComplexityNode> left,
-                                                std::unique_ptr<ComplexityNode> right)
-        {
-            return std::make_unique<ComplexityNode>(
-                ComplexityNode{ComplexityKind::Product, std::move(left), std::move(right)});
-        }
-
-    } // namespace
+    std::unique_ptr<ComplexityNode> product(std::unique_ptr<ComplexityNode> left,
+                                            std::unique_ptr<ComplexityNode> right)
+    {
+        return std::make_unique<ComplexityNode>(
+            ComplexityNode{ComplexityKind::Product, std::move(left), std::move(right)});
+    }
 
     ComplexityTree::ComplexityTree(std::unique_ptr<ComplexityNode> root)
         : root_(std::move(root)) {}
