@@ -23,7 +23,7 @@ If `xcode-select --install` reports that the tools are already installed, contin
 
 ```sh
 cd backend
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build
 cmake --build build --parallel
 ./build/codeforge_backend
 ```
@@ -41,9 +41,9 @@ git clone https://github.com/microsoft/vcpkg.git "$env:USERPROFILE\vcpkg"
 ```
 
 Extract the project and open PowerShell in its `backend` folder. Configure and build with the vcpkg toolchain:
-
+Run this in Developer PowerShell
 ```powershell
-cmake -S . -B build -A x64 "-DCMAKE_TOOLCHAIN_FILE=$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake -S . -B build -DVCPKG_TARGET_TRIPLET=x64-windows "-DCMAKE_TOOLCHAIN_FILE=$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
 cmake --build build --config Release
 .\build\Release\codeforge_backend.exe
 ```
